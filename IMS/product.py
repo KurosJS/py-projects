@@ -1,7 +1,8 @@
 import csv
+from exceptions import InvalidQuantityError, OutOfStockError
 
 class Product:
-    FILENAME = 'products.csv'
+    FILENAME = 'IMS\inventory.csv'
 
     def __init__(self, product_id, name, price, quantity, description):
         self.product_id = product_id
@@ -11,15 +12,22 @@ class Product:
         self.description = description
 
     def __str__(self):
-        return f"Product: {self.name}, price: {self.price}, quantity: {self.quantity}"
+        return f"Product: {self.name}, \nPrice: {self.price}, \nQuantity: {self.quantity}, \nDescription: {self.description}" 
 
-    def rest(self, quantity):
+    def __repr__(self):
+        return f"Product (ID: {self.product_id}, Name: {self.name}, Price: {self.price}, Quantity: {self.quantity}, Description: {self.description})"
+
+    def restock(self, quantity):
+        if quantity < 0:
+            raise InvalidQuantityError("Cannot restock a negative quantity")
         self.quantity += quantity
         self._update_csv()
 
     def sell(self, quantity):
+        if quantity < 0:
+            raise InvalidQuantityError("Cannot sell a negative quantity")
         if self.quantity - quantity < 0:
-            raise Exception("Not enough products in stock")
+            raise OutOfStockError("Not enough products in stock")
         self.quantity -= quantity
         self._update_csv()
 
